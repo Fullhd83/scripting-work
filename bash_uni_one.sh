@@ -22,7 +22,7 @@ read -p "Enter the PID of the process to kill: " pid
 if [ -z "$pid" ]; then
     echo "No PID entered. Exiting."
 
-else
+else #part 1.4 check to see if the process is critical
     if [ "$pid" -eq 1 ] || [ "$pid" -eq $$ ]; then
         echo "Cannot kill this critical process. Exiting."
     else 
@@ -44,4 +44,19 @@ else
             echo "No process with PID $pid found. Exiting."
         fi
     fi
+fi
+
+echo ""
+echo "part 2.1"
+
+read -p "Enter directory to inspect: " dir
+
+if [ ! -d "$dir" ]; then
+    echo "Directory does not exist."
+
+else
+    echo ""
+echo "Part 2.1 - Disk Usage:"
+du -sh "$dir"
+
 fi
