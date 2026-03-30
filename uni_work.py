@@ -1,59 +1,69 @@
-import psutil
+import os
+import zipfile
+from datetime import datetime
 
-# simple list of protected processes
-CRITICAL = ["system", "winlogon.exe", "csrss.exe", "services.exe"]
+# ----- Section 1: Disk Usage -----
 
-# 1. CPU + Memory usage
-cpu = psutil.cpu_percent()
-memory = psutil.virtual_memory().percent
+directory = input("Enter directory path: ")
 
-print("CPU Usage:", cpu, "%")
-print("Memory Usage:", memory, "%")
+total_size = 0
 
-print("\nTop 10 memory consuming processes:")
+for root, dirs, files in os.walk(directory):
+    for file in files:
+        path = os.path.join(root, file)
+        if os.path.exists(path):
+            total_size += os.path.getsize(path)
 
-processes = []
+print("Total size:", round(total_size / (1024 * 1024), 2), "MB")
 
-# 2. collect process info
-for proc in psutil.process_iter():
-    try:
-        info = proc.as_dict(attrs=['pid', 'name', 'username'])
-        info['memory'] = proc.memory_percent()
-        info['cpu'] = proc.cpu_percent()
+# ----- Section 2: Find Large Log Files -----
 
-        processes.append(info)
+large_logs = []
 
-    except:
-        continue  # skip processes we can't access
+for root, dirs, files in os.walk(directory):
+    for file in files:
+        if file.endswith(".log"):
+            path = os.path.join(root, file)
+            size_mb = os.path.getsize(path) / (1024 * 1024)
 
-# sort by memory usage
-processes.sort(key=lambda x: x['memory'], reverse=True)
+            if size_mb > 50:
+                large_logs.append(path)
 
-# show top 10
-for p in processes[:10]:
-    print(p['pid'], p['username'], p['cpu'], p['memory'], p['name'])
+print("Large log files:", large_logs)
 
-# 3. terminate process
-pid = input("\nEnter PID to terminate (or press Enter to skip): ")
+# ----- Section 3: Create ArchiveLogs Folder -----
 
-if pid:
-    pid = int(pid)
+archive_dir = os.path.join(directory, "ArchiveLogs")
 
-    try:
-        proc = psutil.Process(pid)
-        name = proc.name().lower()
+if not os.path.exists(archive_dir):
+    os.makedirs(archive_dir)
+    print("ArchiveLogs folder created")
 
-        # 4. prevent killing critical processes
-        if name in CRITICAL:
-            print("Cannot terminate critical process.")
-        else:
-            confirm = input("Are you sure? (yes/no): ")
+# ----- Section 4: Compress Logs -----
 
-            if confirm == "yes":
-                proc.terminate()
-                print("Process terminated.")
-            else:
-                print("Cancelled.")
+for log in large_logs:
+    name = os.path.basename(log)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    except:
-        print("Error: cannot terminate process.")
+    zip_name = name + "_" + timestamp + ".zip"
+    zip_path = os.path.join(archive_dir, zip_name)
+
+    with zipfile.ZipFile(zip_path, "w") as z:
+        z.write(log, name)
+
+    print("Compressed:", log)
+
+# ----- Section 5: Check Archive Size -----
+
+archive_size = 0
+
+for root, dirs, files in os.walk(archive_dir):
+    for file in files:
+        archive_size += os.path.getsize(os.path.join(root, file))
+
+archive_size_gb = archive_size / (1024 * 1024 * 1024)
+
+if archive_size_gb > 1:
+    print("WARNING: ArchiveLogs exceeds 1GB")
+else:
+    print("ArchiveLogs size:", round(archive_size_gb, 2), "GB")
