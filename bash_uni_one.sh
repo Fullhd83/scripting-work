@@ -1,6 +1,6 @@
 
 #!/bin/bash
-echo "part 1.1"
+#part 1.1
 echo ""
 echo "CPU Information:"
 top -bn1 | grep "Cpu(s)"
@@ -10,13 +10,13 @@ echo "Memory Information:"
 free -h
 echo ""
 
-echo "part 1.2"
+#part 1.2
 echo "top 10 memory consuming processes:"
 echo ""
 echo "PID USER CPU% MEM%"
 ps -eo pid,user,%cpu,%mem --sort=-%mem | head -n 11
 
-echo "part 1.3" 
+#part 1.3
 read -p "Enter the PID of the process to kill: " pid
 
 if [ -z "$pid" ]; then
@@ -47,7 +47,7 @@ else #part 1.4 check to see if the process is critical
 fi
 
 echo ""
-echo "part 2.1"
+#part 2.1
 
 read -p "Enter directory to inspect: " dir
 
@@ -59,4 +59,15 @@ else
 echo "Part 2.1 - Disk Usage:"
 du -sh "$dir"
 
+#part 2.2
+echo ""
+mkdir -p ArchiveLogs
+
+#part 2.3 & 2.4
+find "$dir" -type f -name "*.log" -size +50M | while read file 
+do
+    timestamp=$(date +%Y%m%d%H%M%S)
+    gzip -c "$file" > "ArchiveLogs/$(basename "$file").$timestamp.gz"
+    echo "Archived: $file"
+done
 fi
