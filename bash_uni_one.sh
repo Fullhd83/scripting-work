@@ -70,4 +70,13 @@ do
     gzip -c "$file" > "ArchiveLogs/$(basename "$file").$timestamp.gz"
     echo "Archived: $file"
 done
+
+#part 2.5
+echo ""
+ size=$(du -sm ArchiveLogs | cut -f1)
+    if [ "$size" -gt 1024 ]; then
+        echo "Total size of archived logs exceeds 1GB."
+    else
+        echo "Total size of archived logs is within the limit."
+    fi
 fi
