@@ -1,5 +1,32 @@
 #!/bin/bash
 
+#part 2
+validate_file() {
+    local file="$1"
+
+    if [ ! -f "$file" ]; then
+        echo "File does not exist."
+        return 1
+    fi
+
+    extension="${file##*.}"
+    extension=$(echo "$extension" | tr 'A-Z' 'a-z')
+
+    if [[ "$extension" != "pdf" && "$extension" != "docx" ]]; then
+        echo "Invalid file type. Only .pdf and .docx files are allowed."
+        return 1
+    fi
+
+    size=$(stat -c%s "$file")
+
+    if [ "$size" -gt 5242880 ]; then
+        echo "File is too large. Maximum size is 5MB."
+        return 1
+    fi
+
+    return 0
+}
+
 #part 1
 while true
 do
