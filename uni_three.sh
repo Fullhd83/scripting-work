@@ -74,6 +74,46 @@ list_submissions() {
     fi
 }
 
+#part 4
+simulate_login() {
+    read -p "Enter username: " username
+    current_time=$(date +%s)
+
+    if grep -q "^$username$" "$LOCKED_FILE"; then
+        echo "Account is locked."
+        echo "$username|$current_time|LOCKED" >> "$LOGIN_LOG"
+        return
+    fi
+
+    read -p "Enter password: " password
+
+    recent_attempts=$(awk -F'|' -v user="$username" -v now="$current_time" '
+        $1 == user && (now - $2) <= 60 {count++}
+        END {print count+0}
+    ' "$LOGIN_LOG")
+
+    if [ "$recent_attempts" -ge 3 ]; then
+        echo "Suspicious activity detected: repeated login attempts within 60 seconds."
+    fi
+
+    if [ "$password" = "admin123" ]; then
+        echo "Login successful."
+        echo "$username|$current_time|SUCCESS" >> "$LOGIN_LOG"
+    else
+        echo "Login failed."
+        echo "$username|$current_time|FAILED" >> "$LOGIN_LOG"
+
+        failed_attempts=$(awk -F'|' -v user="$username" '
+            $1 == user && $3 == "FAILED" {count++}
+            END {print count+0}
+        ' "$LOGIN_LOG")
+
+        if [ "$failed_attempts" -ge 3 ]; then
+            grep -q "^$username$" "$LOCKED_FILE" || echo "$username" >> "$LOCKED_FILE"
+            echo "Account locked after three failed login attempts."
+        fi
+    fi
+}
 
 #part 1
 while true
