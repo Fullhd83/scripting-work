@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SUBMISSION_FILE="submissions.txt"
+SUBMISSION_LOG="submission_log.txt"
+
 #part 2
 validate_file() {
     local file="$1"
@@ -47,6 +50,8 @@ submit_assignment() {
     echo "File submitted successfully."
     return 0
 }
+
+
 
 #part 1
 while true
