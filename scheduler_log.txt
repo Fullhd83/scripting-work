@@ -1,0 +1,26 @@
+2026-03-31 07:47:07 - Submitted - 11,f,g,3
+2026-03-31 08:16:56 - Submitted - Student ID: [D[D, Job Name: 44, Execution Time: 3, Priority: 4
+2026-03-31 08:17:20 - Submitted - Student ID: 10011734, Job Name: homi, Execution Time: 1, Priority: 10
+2026-03-31 08:17:25 - Executed - Student ID: 11, Job Name: f, Scheduling: Round Robin, Completed
+2026-03-31 08:17:25 - Executed - Student ID: [D[D, Job Name: 44, Scheduling: Round Robin, Completed
+2026-03-31 08:17:25 - Executed - Student ID: 10011734, Job Name: homi, Scheduling: Round Robin, Completed
+2026-03-31 08:32:09 - Submitted - Student ID: 444, Job Name: homi, Scheduling Type: None
+2026-03-31 08:32:21 - Submitted - Student ID: 789, Job Name: kkoli, Scheduling Type: None
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 789, Job Name: kkoli, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-03-31 08:32:27 - Executed - Student ID: 444, Job Name: homi, Scheduling Type: Round Robin
+2026-04-10 16:08:36 - Submitted - r,t,t,4
+2026-04-11 04:10:12 - 100110734 - grade - Submitted
+2026-04-11 04:10:34 - 1001452136 - grade - Submitted
+2026-04-11 04:10:38 - r - t - Round Robin
+2026-04-11 04:10:38 - 100110734 - grade - Round Robin
+2026-04-11 04:10:38 - 1001452136 - grade - Round Robin
