@@ -27,6 +27,27 @@ validate_file() {
     return 0
 }
 
+#part 3
+submit_assignment() {
+    local file="$1"
+    local filename
+    local filehash
+
+    filename=$(basename "$file")
+    filehash=$(sha256sum "$file" | awk '{print $1}')
+
+    if grep -q "^$filename|$filehash$" "$SUBMISSION_FILE"; then
+        echo "Duplicate submission rejected."
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - REJECTED DUPLICATE - $filename" >> "$SUBMISSION_LOG"
+        return 1
+    fi
+
+    echo "$filename|$filehash" >> "$SUBMISSION_FILE"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - SUBMITTED - $filename" >> "$SUBMISSION_LOG"
+    echo "File submitted successfully."
+    return 0
+}
+
 #part 1
 while true
 do
