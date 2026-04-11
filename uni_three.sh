@@ -2,6 +2,10 @@
 
 SUBMISSION_FILE="submissions.txt"
 SUBMISSION_LOG="submission_log.txt"
+LOGIN_LOG="login_log.txt"
+LOCKED_FILE="locked_accounts.txt"
+
+touch "$SUBMISSION_FILE" "$SUBMISSION_LOG" "$LOGIN_LOG" "$LOCKED_FILE"
 
 #part 2
 validate_file() {
@@ -51,6 +55,24 @@ submit_assignment() {
     return 0
 }
 
+check_submission() {
+    read -p "Enter filename to check: " checkfile
+
+    if grep -q "^$checkfile|" "$SUBMISSION_FILE"; then
+        echo "File has already been submitted."
+    else
+        echo "File has not been submitted."
+    fi
+}
+
+list_submissions() {
+    echo "List of submitted assignments:"
+    if [ -s "$SUBMISSION_FILE" ]; then
+        cat "$SUBMISSION_FILE"
+    else
+        echo "No submissions found."
+    fi
+}
 
 
 #part 1
