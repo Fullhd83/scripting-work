@@ -1,9 +1,16 @@
 #!/bin/bash
 
 #part 2
-queue=()
-completed_jobs=()
 TIME_QUANTUM=5
+
+#part 3
+LOG_FILE="scheduler_log.txt"
+touch "$LOG_FILE"
+
+#part 4
+QUEUE_FILE="job_queue.txt"
+COMPLETED_FILE="completed_jobs.txt"
+touch "$QUEUE_FILE" "$COMPLETED_FILE"
 
 submit_job() {
     read -p "Enter student ID: " student_id
@@ -16,63 +23,69 @@ submit_job() {
         return
     fi
 
-    queue+=("$student_id,$job_name,$exec_time,$priority")
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $student_id - $job_name - Submitted" >> "$LOG_FILE"
+
+    echo "$student_id,$job_name,$exec_time,$priority" >> "$QUEUE_FILE"
     echo "Job submitted."
 }
 
 view_pending_jobs() {
     echo "Pending jobs:"
-    if [ ${#queue[@]} -eq 0 ]; then
-        echo "No pending jobs."
+    if [ -s "$QUEUE_FILE" ]; then
+       cat "$QUEUE_FILE"
     else
-        for job in "${queue[@]}"
-        do
-            echo "$job"
-        done
+       echo "No pending jobs."
     fi
 }
 
 process_round_robin() {
-    if [ ${#queue[@]} -eq 0 ]; then
+    if [ ! -s "$QUEUE_FILE" ]; then
         echo "No jobs in queue."
         return
     fi
 
-    new_queue=()
+    > temp_queue.txt
 
-    for job in "${queue[@]}"
+    while IFS=',' read -r student_id job_name exec_time priority
     do
-        IFS=',' read -r student_id job_name exec_time priority <<< "$job"
-
         if [ "$exec_time" -gt "$TIME_QUANTUM" ]; then
             echo "$job_name processed for $TIME_QUANTUM seconds."
+            echo "$(date '+%Y-%m-%d %H:%M:%S') - $student_id - $job_name - Round Robin" >> "$LOG_FILE"
             remaining=$((exec_time - TIME_QUANTUM))
-            new_queue+=("$student_id,$job_name,$remaining,$priority")
+            echo "$student_id,$job_name,$remaining,$priority" >> temp_queue.txt
         else
             echo "$job_name completed."
-            completed_jobs+=("$student_id,$job_name,$exec_time,$priority")
-        fi
-    done
 
-    queue=("${new_queue[@]}")
+            echo "$(date '+%Y-%m-%d %H:%M:%S') - $student_id - $job_name - Round Robin" >> "$LOG_FILE"
+
+            echo "$student_id,$job_name,$exec_time,$priority" >> "$COMPLETED_FILE"
+        fi
+    done < "$QUEUE_FILE"
+
+    mv temp_queue.txt "$QUEUE_FILE"
 }
 
 process_priority() {
-    if [ ${#queue[@]} -eq 0 ]; then
+    if [ ! -s "$QUEUE_FILE" ]; then
         echo "No jobs in queue."
         return
     fi
 
-    sorted_jobs=$(printf "%s\n" "${queue[@]}" | sort -t',' -k4,4nr)
+    sort -t',' -k4,4nr "$QUEUE_FILE" > temp_queue.txt
 
-    while IFS= read -r job
+    while IFS=',' read -r student_id job_name exec_time priority
     do
-        IFS=',' read -r student_id job_name exec_time priority <<< "$job"
         echo "$job_name completed."
-        completed_jobs+=("$student_id,$job_name,$exec_time,$priority")
-    done <<< "$sorted_jobs"
 
-    queue=()
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - $student_id - $job_name - Priority" >> "$LOG_FILE"
+
+        echo "$student_id,$job_name,$exec_time,$priority" >> "$COMPLETED_FILE"
+
+    done < temp_queue.txt
+
+    > "$QUEUE_FILE"
+
+    rm temp_queue.txt
 }
 
 process_queue() {
@@ -95,13 +108,10 @@ process_queue() {
 
 view_completed_jobs() {
     echo "Completed jobs:"
-    if [ ${#completed_jobs[@]} -eq 0 ]; then
-        echo "No completed jobs."
+    if [ -s "$COMPLETED_FILE" ]; then
+        cat "$COMPLETED_FILE"
     else
-        for job in "${completed_jobs[@]}"
-        do
-            echo "$job"
-        done
+        echo "No completed jobs."
     fi
 }
 
